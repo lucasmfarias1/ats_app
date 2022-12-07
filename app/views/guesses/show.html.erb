@@ -1,0 +1,223 @@
+
+<div class="container small mb-3">
+  <%= @player.beat_spells.size %>/648 abilities guessed correctly
+</div>
+
+<pre>
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========
+</pre>
+
+<div id="tips-box" style="display: none">
+  <%= @spell.champion %>'s <%= @spell.key %><br>
+  Cooldowns: <span class="fw-normal"><%= @spell.cooldown %></span><br>
+  Costs: <span class="fw-normal"><%= @spell.cost %></span><br>
+</div>
+<button onclick="toggleTips()">Toggle Tips</button>
+
+<hr>
+
+<div class="container">
+<% @spell.name.split('').each.with_index do |letter, i| %>
+  <% if letter.match?(/[[:alnum:]]/) %>
+    <span id='letter_<%= i %>' data-letter='<%= letter.upcase %>'>_ </span>
+  <% else %>
+    <span id='letter_<%= i %>' style="margin: 0 6px"> </span>
+  <% end %>
+<% end %>
+</div>
+
+<hr>
+
+Letters already guessed:
+<div id="guessed_box">
+</div>
+
+<hr>
+
+<%= form_with url: root_path, remote: true, id: :guess_form do |f| %>
+  <%= f.label :guess, 'Type any letter to make a guess' %><br>
+  <%= f.text_field :guess, id: :guess_input, maxlength: 1, autocomplete: :off %>
+  <%=
+    f.hidden_field :guess,
+    id: :guess_input
+  %>
+<% end %>
+
+<%= form_with url: root_path, remote: true, id: :win_form do |f| %>
+  <%=
+    f.hidden_field :spell_id,
+    id: :guess_input,
+    value: @spell.id
+  %>
+<% end %>
+
+<div id="win-box"></div>
+<div id="play-again-box" style="display: none;">
+  <button onclick="window.location.reload();">Play Again</button>
+</div>
+
+<script type="text/javascript">
+  const currentSpell = "<%= raw @spell.name %>";
+  const uniqueCharacters = String.prototype
+                                 .concat(...new Set(currentSpell.toUpperCase()))
+                                 .replace(/[^a-z0-9]/gi, '');
+  let state = {
+    lettersGuessed: [],
+    spellsGuessed: [],
+    correctGuesses: 0,
+    incorrectGuesses: 0,
+    won: false,
+    defeat: false
+  }
+
+  function toggleTips() {
+    if (localStorage.showTips == "false") {
+      localStorage.showTips = 'true';
+      $("#tips-box").show();
+    } else {
+      localStorage.showTips = 'false';
+      $("#tips-box").hide();
+    }
+  }
+
+  function fillLetters(character) {
+    if (uniqueCharacters.includes(character)) {
+      state.correctGuesses += 1;
+      document.querySelectorAll(`[data-letter="${character}"]`).forEach((element) => {
+        element.setHTML(character);
+      });
+    } else {
+      state.incorrectGuesses += 1;
+      $('#guessed_box').append(character + " ");
+      updateHangman();
+      checkForDefeat();
+    }
+  }
+
+  function checkForWin() {
+    if (state.correctGuesses >= uniqueCharacters.length) {
+      $("#win_form")[0].requestSubmit();
+      document.querySelector('#win-box').setHTML("You got it! Press enter to play again.");
+      $("#play-again-box").show();
+      $("#guess_form").hide();
+      state.won = true;
+    }
+  }
+
+  function checkForDefeat() {
+    if (state.incorrectGuesses >= 6) {
+      document.querySelector('#win-box').setHTML("You lost! Press enter to play again.");
+      $("#play-again-box").show();
+      $("#guess_form").hide();
+      state.defeat = true;
+    }
+  }
+
+  function updateHangman() {
+    switch (state.incorrectGuesses) {
+    case 1:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========
+      `)
+      break;
+    case 2:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========
+      `)
+      break;
+    case 3:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========
+      `)
+      break;
+    case 4:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========
+      `)
+      break;
+    case 5:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ /    |
+      |
+=========
+      `)
+      break;
+    case 6:
+      $('pre').html(`
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========
+      `)
+      break;
+    }
+  }
+
+  function processKeyPress (event) {
+    let keyCodePressed = event.keyCode == undefined ? $('#guess_input').val().charCodeAt(0) : event.keyCode;
+    $('#guess_input').val('');
+
+    if ((state.won || state.defeat) && keyCodePressed == 13) {
+      return location.reload();
+    }
+
+    if (state.won || state.defeat) {
+      return;
+    }
+
+    if ((keyCodePressed >= 48 && keyCodePressed <= 57) || (keyCodePressed >= 65 && keyCodePressed <= 90)) {
+      let character = String.fromCharCode(keyCodePressed).toUpperCase();
+      if (!state.lettersGuessed.includes(character)) {
+        fillLetters(character);
+        state.lettersGuessed.push(character);
+        checkForWin();
+      }
+    }
+  }
+
+  document.addEventListener("keyup", (event) => processKeyPress(event))
+  $('#guess_input').on("input", (event) => processKeyPress(event))
+
+  if (localStorage.showTips == "false") {
+    $("#tips-box").hide();
+  } else {
+    $("#tips-box").show();
+  }
+</script>

@@ -1,5 +1,5 @@
 {
-  "name": "league_of_hangman",
+  "name": "ats_app",
   "private": true,
   "dependencies": {
     "@rails/actioncable": "^6.0.0",

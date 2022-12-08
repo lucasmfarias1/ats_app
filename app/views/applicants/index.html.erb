@@ -1,0 +1,44 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">Summary</th>
+    <th scope="col">Rating</th>
+    <th scope="col">Phone</th>
+    <th scope="col">Email</th>
+    <th scope="col">Website</th>
+    <th scope="col">Location</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @applicants.each do |applicant| %>
+  <tr>
+    <th scope="row"><%= link_to applicant.name&.truncate(20), root_path %></th>
+    <td><%= applicant.summary&.truncate(20) %></td>
+    <td><%= applicant.rating %></td>
+    <td><%= applicant.phone %></td>
+    <td><%= applicant.email %></td>
+    <td><%= applicant.website %></td>
+    <td><%= applicant.location&.truncate(20) %></td>
+  </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<% if @applicants.blank? %>
+  <div>
+    You have no applicants yet
+  </div>
+  <div class="mt-1">
+    <%= link_to 'Create New Applicant', root_path, class: 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<%= paginate @applicants %>
+
+<%= form_with url: applicants_path, method: :post do |f| %>
+  <%= f.label :name %><br>
+  <%= f.text_field :name, autocomplete: :off %>
+
+  <%= f.submit %>
+<% end %>

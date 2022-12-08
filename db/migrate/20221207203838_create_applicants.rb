@@ -4,13 +4,12 @@ class CreateApplicants < ActiveRecord::Migration[6.0]
       t.references :user, null: false, foreign_key: true
       t.string :name
       t.string :summary
-      t.integer :status
       t.string :photo_url
-      t.integer :overall_grade
+      t.integer :rating
       t.string :phone
       t.string :email
       t.string :website
-      t.string :linkedin
+      t.string :location
 
       t.timestamps
     end

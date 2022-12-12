@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :applicants
+  has_many :tags
 
   enum tier: [:trial, :free, :premium]
 

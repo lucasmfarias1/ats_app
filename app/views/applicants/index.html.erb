@@ -9,7 +9,9 @@
                        autocomplete: :off,
                        autofocus: true,
                        class: 'form-control',
-                       placeholder: 'Name' %>
+                       placeholder: 'Name',
+                       required: true,
+                       minlength: 2 %>
     </div>
 
     <div class="form-group col-7 p-1">
@@ -27,7 +29,7 @@
 
 <hr>
 
-<h4>Talents</h2>
+<h4>Talent List</h2>
 
 <table class="table table-striped table-bordered">
   <thead>
@@ -39,7 +41,14 @@
   <tbody>
   <% @applicants.each do |applicant| %>
   <tr>
-    <th scope="row"><%= link_to applicant.name&.truncate(20), root_path %></th>
+    <th scope="row">
+      <%= link_to applicant.name&.truncate(20), root_path %>
+      <span class="fw-normal small">
+        <% applicant.tags.each.with_index do |tag, i| %>
+          <span class="badge bg-secondary"><%= tag.name %></span>
+        <% end %>
+      </span>
+    </th>
     <td><%= applicant.rating %></td>
   </tr>
   <% end %>
@@ -48,7 +57,7 @@
 
 <% if @applicants.blank? %>
   <div>
-    You have no applicants yet
+    You have no Talents yet
   </div>
 <% end %>
 

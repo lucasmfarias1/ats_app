@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_07_203838) do
+ActiveRecord::Schema.define(version: 2022_12_11_211706) do
 
   create_table "applicants", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -25,6 +25,11 @@ ActiveRecord::Schema.define(version: 2022_12_07_203838) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_applicants_on_user_id"
+  end
+
+  create_table "applicants_tags", id: false, force: :cascade do |t|
+    t.integer "applicant_id", null: false
+    t.integer "tag_id", null: false
   end
 
   create_table "beat_spells", force: :cascade do |t|
@@ -51,6 +56,14 @@ ActiveRecord::Schema.define(version: 2022_12_07_203838) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -67,4 +80,5 @@ ActiveRecord::Schema.define(version: 2022_12_07_203838) do
   add_foreign_key "applicants", "users"
   add_foreign_key "beat_spells", "players"
   add_foreign_key "beat_spells", "spells"
+  add_foreign_key "tags", "users"
 end

@@ -18,7 +18,7 @@
       <%= f.text_field :tags,
                        autocomplete: :off,
                        class: 'form-control',
-                       placeholder: 'Tags (ex. node developer, react developer, senior level, etc)' %>
+                       placeholder: 'Tags (ex.: ruby, vue, node, senior)' %>
     </div>
 
     <div class="form-group col-1 p-1">
@@ -42,7 +42,7 @@
   <% @applicants.each do |applicant| %>
   <tr>
     <th scope="row">
-      <%= link_to applicant.name&.truncate(20), root_path %>
+      <%= link_to applicant.name&.truncate(20), applicant_path(applicant.id) %>
       <span class="fw-normal small">
         <% applicant.tags.each.with_index do |tag, i| %>
           <span class="badge bg-secondary"><%= tag.name %></span>

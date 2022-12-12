@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   devise_for :users
+
   root to: "applicants#index"
 
-  get '/applicants', to: 'applicants#index', as: :applicants_path
+  get '/:id', to: 'applicants#show', as: :applicant
   post '/applicants', to: 'applicants#create'
 end

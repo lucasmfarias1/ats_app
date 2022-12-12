@@ -4,42 +4,53 @@ class ApplicantsController < ApplicationController
   def index
     handle_filters
 
-    @applicants = current_user.applicants
-                              .joins(:tags)
-                              .where(tags_are_selected)
-                              .order(params[:order] || { created_at: :desc })
-                              .page(params[:page])
-                              .having(filtered_tags_having_clause)
-                              .group('applicants.id')
+    @applicants =
+      current_user
+        .applicants
+        .joins(:tags)
+        .where(tags_are_selected)
+        .order(params[:order] || { created_at: :desc })
+        .page(params[:page])
+        .having(filtered_tags_having_clause)
+        .group("applicants.id")
   end
 
   def create
-    @applicant = current_user.applicants.create(
-      name: params[:name],
-      summary: params[:summary],
-      rating: params[:rating],
-      phone: params[:phone],
-      email: params[:email],
-      website: params[:website],
-      location: params[:location],
-      tags: processed_tags.map do |tag_name|
-              Tag.find_or_initialize_by name: tag_name.strip.upcase, user: current_user
-            end
-    )
+    @applicant =
+      current_user.applicants.create(
+        name: params[:name],
+        summary: params[:summary],
+        rating: params[:rating],
+        phone: params[:phone],
+        email: params[:email],
+        website: params[:website],
+        location: params[:location],
+        tags:
+          processed_tags.map do |tag_name|
+            Tag.find_or_initialize_by name: tag_name.strip.upcase,
+                                      user: current_user
+          end,
+      )
 
     redirect_to root_path
+  end
+
+  def show
+    @applicant = current_user.applicants.find(params[:id])
   end
 
   private
 
   def processed_tags
-    params[:tags].split(',')
+    params[:tags].split(",")
   end
 
   def handle_filters
     session[:tags_to_filter] ||= []
     session[:tags_to_filter] |= [params[:add_tag]] if params[:add_tag].present?
-    session[:tags_to_filter].delete params[:remove_tag] if params[:remove_tag].present?
+    if params[:remove_tag].present?
+      session[:tags_to_filter].delete params[:remove_tag]
+    end
     session[:tags_to_filter].compact!
   end
 

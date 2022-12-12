@@ -2,14 +2,13 @@ class Applicant < ApplicationRecord
   belongs_to :user
   has_and_belongs_to_many :tags
 
-  before_save :upcase_attributes
+  before_save :cleanup_attributes
 
   private
 
-  def upcase_attributes
-    # unupcaseable = ['rating', 'id', 'user_id']
+  def cleanup_attributes
     self.attributes.each do |attribute, value|
-      next if !value.is_a?(String) # || unupcaseable.include?(attribute)
+      next unless value.is_a?(String)
 
       value = value.strip.upcase unless value.blank?
       self.send("#{attribute}=", value)

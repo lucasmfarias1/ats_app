@@ -5,23 +5,43 @@
   </a>
   <hr>
 
-  <%= form_with url: applicants_path, method: :get do |f| %>
-
   <div class="form-row d-flex mb-1">
     <div class="form-group col-12">
       <div class="d-block">
-        <input class="form-control" id="tag-select" placeholder="Tag">
+        <input name="add_tag" class="form-control" id="tag-select" placeholder="Filter by tag">
       </div>
     </div>
   </div>
-  <div class="form-row d-flex">
-    <%= f.submit 'Filter', class: 'btn btn-primary' %>
+
+  <div>
+    <% session[:tags_to_filter].each do |tag| %>
+      <span
+        style="cursor: pointer;"
+        data-tagname="<%= tag %>"
+        class="badge bg-secondary tag-remove"><%= tag %> <span class="fw-lighter text-decoration-underline">x</span></span>
+    <% end %>
   </div>
-<% end %>
 </div>
 
 <script type="text/javascript">
   $("#tag-select").autocomplete({
-    source: <%= current_user.tags.map { |tag| tag.name }.to_s.html_safe %>
+    source: <%= current_user.tags.map { |tag| tag.name }.to_s.html_safe %>,
+    select: function(event, ui) {
+      $.ajax({
+        url: "/",
+        data: {add_tag: ui.item.value}
+      }).always(function() {
+        window.location.reload();
+      });
+    }
+  });
+
+  $(".tag-remove").click(function(event) {
+    $.ajax({
+        url: "/",
+        data: {remove_tag: event.target.dataset.tagname}
+      }).always(function() {
+        window.location.reload();
+      });
   });
 </script>

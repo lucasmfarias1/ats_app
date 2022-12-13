@@ -1,5 +1,6 @@
 class ApplicantsController < ApplicationController
   before_action :fetch_or_create_user
+  before_action :set_current_user_tags, only: %i[index]
   before_action :set_applicant, only: %i[update show]
 
   def index
@@ -76,21 +77,29 @@ class ApplicantsController < ApplicationController
   def add_tag
     return unless params[:add_tag].present?
 
-    tag = Tag.find_or_initialize_by name: params[:add_tag].strip.upcase,
+    @added_tag = Tag.find_or_initialize_by name: params[:add_tag].strip.upcase,
                                     user: current_user
 
-    @applicant.tags << tag
-    @applicant.save
+    if @applicant.tags.include? @added_tag
+      @added_tag = nil
+    else
+      @applicant.tags << @added_tag
+      @applicant.save
+    end
   end
 
   def remove_tag
     return unless params[:remove_tag].present?
 
-    tag = @applicant.tags.find_by_name(params[:remove_tag])
-    @applicant.tags.destroy(tag.id) if tag.present?
+    @removed_tag = @applicant.tags.find_by_name(params[:remove_tag])
+    @applicant.tags.destroy(@removed_tag.id) if @removed_tag.present?
   end
 
   def set_applicant
     @applicant = current_user.applicants.find(params[:id])
+  end
+
+  def set_current_user_tags
+    @current_user_tags = current_user.tags.joins(:applicants).group("tags.id")
   end
 end

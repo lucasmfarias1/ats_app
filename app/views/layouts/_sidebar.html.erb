@@ -1,47 +1,50 @@
 <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
-  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-    <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-    <span class="fs-5">Filters</span>
-  </a>
-  <hr>
+  <% if current_page?({controller: :applicants, action: :index}) %>
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+      <span class="fs-5">Filters</span>
+    </a>
+    <hr>
 
-  <div class="form-row d-flex mb-1">
-    <div class="form-group col-12">
-      <div class="d-block">
-        <input name="add_tag" class="form-control" id="tag-select" placeholder="Filter by tag">
+    <div class="form-row d-flex mb-1">
+      <div class="form-group col-12">
+        <div class="d-block">
+          <%= form_with url: root_path, method: :get, id: 'add-tag-filter-form' do %>
+            <input name="add_tag" class="form-control" id="tag-select" placeholder="Filter by Tags">
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div>
-    <% session[:tags_to_filter].each do |tag| %>
-      <span
-        style="cursor: pointer;"
-        data-tagname="<%= tag %>"
-        class="badge bg-secondary tag-remove"><%= tag %> <span class="fw-lighter text-decoration-underline">x</span></span>
-    <% end %>
-  </div>
+    <div>
+      <% session[:tags_to_filter].each do |tag| %>
+        <%= link_to root_path(remove_tag: tag) do %>
+          <span
+            style="cursor: pointer;"
+            data-tagname="<%= tag %>"
+            class="badge bg-secondary tag-remove"><%= tag %> <span class="fw-lighter text-decoration-underline">x</span></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 
 <script type="text/javascript">
-  $("#tag-select").autocomplete({
-    source: <%= current_user.tags.map { |tag| tag.name }.to_s.html_safe %>,
-    select: function(event, ui) {
-      $.ajax({
-        url: "/",
-        data: {add_tag: ui.item.value}
-      }).always(function() {
-        window.location.reload();
-      });
-    }
-  });
+  <% if current_page?({controller: :applicants, action: :index}) %>
+    $("#tag-select").autocomplete({
+      source: <%= @current_user_tags.map { |tag| tag.name }.to_s.html_safe %>,
+      select: (event, ui) => {
+        $("#tag-select").val(ui.item.value);
+        $("#add-tag-filter-form").submit();
+      }
+    });
 
-  $(".tag-remove").click(function(event) {
-    $.ajax({
-        url: "/",
-        data: {remove_tag: event.target.dataset.tagname}
-      }).always(function() {
-        window.location.reload();
-      });
-  });
+    $('#tag-select').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) { 
+        e.preventDefault();
+        return false;
+      }
+    });
+  <% end %>
 </script>

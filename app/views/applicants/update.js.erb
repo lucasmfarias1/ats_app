@@ -1,6 +1,7 @@
-<% if params[:remove_tag].present? %>
-  $("[data-tagname=<%= params[:remove_tag] %>").remove();
+<% if @removed_tag.present? %>
+  $("[data-tagname=\"<%= @removed_tag.name.html_safe %>\"").remove();
 <% end %>
 
-<% if params[:add_tag].present? %>
+<% if @added_tag.present? %>
+  $('#tags-box').append('<a data-remote="true" rel="nofollow" data-method="put" href="/<%= @applicant.id %>?remove_tag=<%= @added_tag.name %>"><span class="badge bg-secondary tag-remove" data-tagname="<%= @added_tag.name %>"><%= @added_tag.name %> <span class="fw-lighter text-decoration-underline">x</span></span></a> ');
 <% end %>

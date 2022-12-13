@@ -1,5 +1,6 @@
 class ApplicantsController < ApplicationController
   before_action :fetch_or_create_user
+  before_action :set_applicant, only: %i[update show]
 
   def index
     handle_filters
@@ -7,7 +8,7 @@ class ApplicantsController < ApplicationController
     @applicants =
       current_user
         .applicants
-        .joins(:tags)
+        .left_joins(:tags)
         .where(tags_are_selected)
         .order(params[:order] || { created_at: :desc })
         .page(params[:page])
@@ -35,8 +36,14 @@ class ApplicantsController < ApplicationController
     redirect_to root_path
   end
 
+  def update
+    add_tag
+    remove_tag
+    # update_applicant
+    render 'update.js.erb'
+  end
+
   def show
-    @applicant = current_user.applicants.find(params[:id])
   end
 
   private
@@ -64,5 +71,26 @@ class ApplicantsController < ApplicationController
     return unless session[:tags_to_filter].present?
 
     "COUNT(DISTINCT tags.name) = #{session[:tags_to_filter].count}"
+  end
+
+  def add_tag
+    return unless params[:add_tag].present?
+
+    tag = Tag.find_or_initialize_by name: params[:add_tag].strip.upcase,
+                                    user: current_user
+
+    @applicant.tags << tag
+    @applicant.save
+  end
+
+  def remove_tag
+    return unless params[:remove_tag].present?
+
+    tag = @applicant.tags.find_by_name(params[:remove_tag])
+    @applicant.tags.destroy(tag.id) if tag.present?
+  end
+
+  def set_applicant
+    @applicant = current_user.applicants.find(params[:id])
   end
 end

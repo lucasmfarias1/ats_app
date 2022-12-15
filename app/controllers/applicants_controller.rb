@@ -44,8 +44,7 @@ class ApplicantsController < ApplicationController
     render 'update.js.erb'
   end
 
-  def show
-  end
+  def show;end
 
   private
 

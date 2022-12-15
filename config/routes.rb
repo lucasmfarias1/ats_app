@@ -7,4 +7,7 @@ Rails.application.routes.draw do
   put '/:id', to: 'applicants#update'
   get '/applicants', to: 'applicants#index', as: :applicants
   post '/applicants', to: 'applicants#create'
+
+  post '/applicants/:applicant_id/notes', to: 'notes#create', as: :notes
+  delete '/applicants/:applicant_id/notes/:id', to: 'notes#destroy', as: :note
 end

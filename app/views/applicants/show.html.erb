@@ -94,30 +94,42 @@
         <div class="card-body">
           <div class="tab-content">
             <div class="active tab-pane" id="activity">
-              <textarea
-                class="form-control"
-                placeholder="Type a Note"
-              ></textarea>
+              <%= form_with url: notes_path(applicant_id: @applicant.id), method: :post, id: :note_create_form do |f| %>
+                <%=
+                  f.text_field :content,
+                              class: 'form-control',
+                              placeholder: 'Type a Note',
+                              required: true,
+                              minlength: 2 %>
+                <%= f.submit 'Add Note',
+                             class: 'mt-1 btn btn-primary',
+                             data: { :disable_with => "Adding Note..." } %>
+              <% end %>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="post card my-1">
-        <div class="card-body">
-          <p>
-            Lorem ipsum represents a long-held tradition for designers,
-            typographers and the like. Some people hate it and argue for
-            its demise, but others ignore the hate as they create awesome
-            tools to help create filler text for everyone from bacon
-            lovers to Charlie Sheen fans.
+    <% @applicant.notes.order(created_at: :desc).each do |note| %>
+      <div class="post card my-1" id="note-card-<%= note.id %>">
+        <div class="card-body px-3 py-2">
+          <p class="m-0">
+            <%= note.content %>
           </p>
-          <p class="mb-0">
-            <span class="description"
-              ><%= 35.minutes.ago.strftime('%c %Z') %></span>
+          <p class="mb-0 text-secondary">
+            <span class="small"
+              ><%= note.created_at.strftime('%c %Z') %></span>
+            <%=
+              link_to 'Delete',
+                      note_path(applicant_id: @applicant.id, id: note.id),
+                      method: :delete,
+                      remote: true,
+                      class: 'btn btn-outline-danger btn-sm',
+                      data: { :disable_with => "Deleting..." } %>
           </p>
         </div>
       </div>
+    <% end %>
     </div>
   </div>
 </div>

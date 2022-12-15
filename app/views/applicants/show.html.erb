@@ -16,8 +16,15 @@
                       class="fw-lighter text-decoration-underline">x</span></span><% end %>
             <% end %>
           </div>
-          <%= form_with url: applicant_path(@applicant), method: :put, remote: true do |f| %>
-            <%= f.text_field :add_tag, class: 'form-control', placeholder: 'Add Tag', autocomplete: :off, pattern: '[a-zA-Z0-9 #.+]+', require: true, id: :add_tag_input %>
+          <%= form_with url: applicant_path(@applicant), method: :put, remote: true, id: :add_tag_form do |f| %>
+            <%= f.text_field :add_tag,
+                             class: 'form-control',
+                             placeholder: 'Add Tag',
+                             autocomplete: :off,
+                             pattern: '[a-zA-Z0-9 #.+]+',
+                             require: true,
+                             id: :add_tag_input,
+                             data: { :disable_with => "Adding tag..." } %>
           <% end %>
 
           <hr>
@@ -133,3 +140,9 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  $("#add_tag_form").bind("ajax:beforeSend", function(event,xhr,status) {
+    $('#add_tag_input').val('');
+  })
+</script>

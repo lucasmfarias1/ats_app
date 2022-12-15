@@ -3,6 +3,6 @@
 <% end %>
 
 <% if @added_tag.present? %>
-  $("#add_tag_input").val('');
   $("#tags-box").append('<a data-remote="true" rel="nofollow" data-method="put" href="/<%= @applicant.id %>?remove_tag=<%= @added_tag.name %>"><span class="badge bg-secondary tag-remove" data-tagname="<%= @added_tag.name %>"><%= @added_tag.name %> <span class="fw-lighter text-decoration-underline">x</span></span></a> ');
+  $("#add_tag_input").val('');
 <% end %>

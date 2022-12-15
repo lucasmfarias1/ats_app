@@ -15,17 +15,20 @@
               <b>Rating</b> <a class="float-right">13,287</a>
             </li>
           </ul>
-          
+
           <h5>Tags</h5>
           <div id="tags-box" class="my-2">
             <% @applicant.tags.each.with_index do |tag, i| %>
               <%= link_to applicant_path(id: @applicant.id, remove_tag: tag.name), method: :put, remote: true do %>
-                <span class="badge bg-secondary tag-remove" data-tagname="<%= tag.name %>"><%= tag.name %> <span class="fw-lighter text-decoration-underline">x</span></span>
-              <% end %>
+                <span
+                  class="badge bg-secondary tag-remove"
+                  data-tagname="<%= tag.name %>"><%= tag.name %>
+                    <span
+                      class="fw-lighter text-decoration-underline">x</span></span><% end %>
             <% end %>
           </div>
           <%= form_with url: applicant_path(@applicant), method: :put, remote: true do |f| %>
-            <%= f.text_field :add_tag, class: 'form-control', placeholder: 'Add Tag', autocomplete: :off, pattern: '[a-zA-Z0-9 ]+', require: true %>
+            <%= f.text_field :add_tag, class: 'form-control', placeholder: 'Add Tag', autocomplete: :off, pattern: '[a-zA-Z0-9 #.+]+', require: true, id: :add_tag_input %>
           <% end %>
         </div>
       </div>

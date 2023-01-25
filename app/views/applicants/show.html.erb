@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-3">
-      <div class="card card-primary card-outline mb-4">
+      <div class="card card-primary card-outline">
         <div class="card-body box-profile">
           <h3 class="profile-username text-center"><%= @applicant.name %></h3>
 
@@ -26,52 +26,37 @@
                              id: :add_tag_input,
                              data: { :disable_with => "Adding tag..." } %>
           <% end %>
-
-          <hr>
-
-          <ul class="list-group list-group-unbordered">
-            <li class="list-group-item">
-              <b>Notes</b> <a class="float-right">1,322</a>
-            </li>
-            <li class="list-group-item">
-              <b>Attachments</b> <a class="float-right">543</a>
-            </li>
-            <li class="list-group-item">
-              <b>Rating</b> <a class="float-right">13,287</a>
-            </li>
-          </ul>
         </div>
       </div>
 
+      <hr>
+
       <div class="card card-primary">
         <div class="card-header">
-          <h3 class="card-title">About Me</h3>
+          <h3 class="card-title">Attachments</h3>
         </div>
 
         <div class="card-body">
-          <strong><i class="fas fa-book mr-1"></i> Education</strong>
-          <p class="text-muted">
-            B.S. in Computer Science from the University of Tennessee at
-            Knoxville
-          </p>
-          <hr />
-          <strong><i class="fas fa-map-marker-alt mr-1"></i> Location</strong>
-          <p class="text-muted">Malibu, California</p>
-          <hr />
-          <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
-          <p class="text-muted">
-            <span class="tag tag-danger">UI Design</span>
-            <span class="tag tag-success">Coding</span>
-            <span class="tag tag-info">Javascript</span>
-            <span class="tag tag-warning">PHP</span>
-            <span class="tag tag-primary">Node.js</span>
-          </p>
-          <hr />
-          <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
-          <p class="text-muted">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
-            fermentum enim neque.
-          </p>
+          <%= form_with url: attachments_path(applicant_id: @applicant.id), method: :post, id: 'attachment_upload_form' do |f| %>
+            <%= f.file_field(:content, id: 'attachment_upload_field') %>
+          <% end %>
+
+          <% @applicant.attachments.each do |attachment| %>
+            <div class="my-1"><strong><i class="fas fa-file"></i> <%= attachment.filename %></strong></div>
+          <% end %>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="card card-primary">
+        <div class="card-header">
+          <h3 class="card-title">Appointments</h3>
+        </div>
+
+        <div class="card-body">
+          <div class="my-1"><strong><i class="fas fa-file"></i> cv.pdf</strong></div>
+          <div class="my-1"><strong><i class="fas fa-file"></i> id.pdf</strong></div>
         </div>
       </div>
     </div>
@@ -144,5 +129,9 @@
 <script type="text/javascript">
   $("#add_tag_form").bind("ajax:beforeSend", function(event,xhr,status) {
     $('#add_tag_input').val('');
-  })
+  });
+
+  document.getElementById("attachment_upload_field").onchange = function() {
+    document.getElementById("attachment_upload_form").submit();
+  };
 </script>

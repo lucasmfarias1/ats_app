@@ -10,4 +10,6 @@ Rails.application.routes.draw do
 
   post '/applicants/:applicant_id/notes', to: 'notes#create', as: :notes
   delete '/applicants/:applicant_id/notes/:id', to: 'notes#destroy', as: :note
+
+  post '/applicants/:applicant_id/attachments', to: 'attachments#create', as: :attachments
 end

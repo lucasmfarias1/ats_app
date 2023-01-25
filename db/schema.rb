@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_11_211706) do
+ActiveRecord::Schema.define(version: 2023_01_25_204832) do
 
   create_table "applicants", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -32,6 +32,16 @@ ActiveRecord::Schema.define(version: 2022_12_11_211706) do
     t.integer "tag_id", null: false
   end
 
+  create_table "attachments", force: :cascade do |t|
+    t.text "json_data"
+    t.string "url"
+    t.string "filename"
+    t.integer "applicant_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["applicant_id"], name: "index_attachments_on_applicant_id"
+  end
+
   create_table "beat_spells", force: :cascade do |t|
     t.integer "spell_id", null: false
     t.integer "player_id", null: false
@@ -39,6 +49,14 @@ ActiveRecord::Schema.define(version: 2022_12_11_211706) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["player_id"], name: "index_beat_spells_on_player_id"
     t.index ["spell_id"], name: "index_beat_spells_on_spell_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.text "content"
+    t.integer "applicant_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["applicant_id"], name: "index_notes_on_applicant_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -78,7 +96,9 @@ ActiveRecord::Schema.define(version: 2022_12_11_211706) do
   end
 
   add_foreign_key "applicants", "users"
+  add_foreign_key "attachments", "applicants"
   add_foreign_key "beat_spells", "players"
   add_foreign_key "beat_spells", "spells"
+  add_foreign_key "notes", "applicants"
   add_foreign_key "tags", "users"
 end
